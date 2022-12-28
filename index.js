@@ -59,7 +59,7 @@ app.get("/getarchive", (req, res) => {
 
     res.send(result.rows);
 
-    client.end()
+   
 
   });
 });
@@ -83,7 +83,7 @@ app.post("/send", (req, res) => {
 
     res.send({ success: true });
 
-    client.end()
+    
   });
 });
 
