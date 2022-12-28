@@ -38,14 +38,14 @@ client.connect(function(err){
   
   }); */
 
-  client.query('SELECT * FROM blockchain_table',function(err,result){
+ /*  client.query('SELECT * FROM blockchain_table',function(err,result){
     if(err){
       console.log("err on querying",err)
     }
     console.log(result.rows)
 
     client.end();
-  })
+  }) */
 
 
 app.get("/getarchive", (req, res) => {
