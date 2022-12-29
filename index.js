@@ -71,8 +71,9 @@ app.post("/send", (req, res) => {
   Contract address:${address},
   arbiter:${arbiter},
   beneficiary:${beneficiary},
-  value:${amount}`)
-  const sql='INSERT INTO blockchain_table (contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6)';
+  value:${amount}
+  isApproved:${isApproved}`)
+  const sql='INSERT INTO blockchain_table (contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5)';
   const values = [address,arbiter,beneficiary,amount,isApproved];
   client.query(sql, values, (error, result) => {
     if (error) {
@@ -86,6 +87,28 @@ app.post("/send", (req, res) => {
     
   });
 });
+
+app.post("/updateapprove", (req, res) => {
+  const { address } = req.body;
+  
+  console.log(`POST values:,
+  Contract address:${address},`)
+  const sql='UPDATE "blockchain_table" SET "isapproved"=$1 where "contract_address"=$2';
+  const values = [true,address];
+  client.query(sql, values, (error, result) => {
+    if (error) {
+      console.error('Error inserting into the database: ' + error.stack);
+      res.status(500).send({ error: 'Error inserting into the database' });
+      return;
+    }
+    
+    res.send({ success: true });
+
+    
+  });
+});
+
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`);
