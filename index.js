@@ -65,16 +65,17 @@ app.get("/getarchive", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { address, arbiter, beneficiary,value,isApproved } = req.body;
+  const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
+  Chain:${chain},
   Contract address:${address},
   arbiter:${arbiter},
   beneficiary:${beneficiary},
   value:${amount}
   isApproved:${isApproved}`)
-  const sql='INSERT INTO blockchain_table (contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5)';
-  const values = [address,arbiter,beneficiary,amount,isApproved];
+  const sql='INSERT INTO blockchain_table (chain,contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6)';
+  const values = [chain,address,arbiter,beneficiary,amount,isApproved];
   client.query(sql, values, (error, result) => {
     if (error) {
       console.error('Error inserting into the database: ' + error.stack);
