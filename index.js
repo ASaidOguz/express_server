@@ -8,6 +8,7 @@ const session=require('express-session')
 var pg=require('pg')
 const LocalStrategy=require('passport-local').Strategy
 const bcrypt=require('bcryptjs')
+const cookieParser = require("cookie-parser");
 require('dotenv').config()
 
 const passport = require("passport");
@@ -38,6 +39,8 @@ app.use(session({
   resave:false,
   saveUninitialized:false
 }))
+
+app.use(cookieParser("verySecret"));
 app.use(passport.initialize())
 app.use(passport.session())
 
