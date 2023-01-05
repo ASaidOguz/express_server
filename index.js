@@ -47,32 +47,6 @@ app.use(passport.session())
 
 
 
-/* const pool = new Pool({
-    user: 'postgres',
-    host: `${process.env.HOST}`,
-    database: 'blockchain',
-    password: `${process.env.POSTGRES_PASS}`,
-    port: 5432,
-  }); */
-/*   pool.query('SELECT * FROM blockchain_table', (error, result) => {
-    if (error) {
-      console.error('Error querying the database: ' + error.stack);
-      return;
-    }
-  
-    console.log(result.rows);
-
-  
-  }); */
-
- /*  client.query('SELECT * FROM blockchain_table',function(err,result){
-    if(err){
-      console.log("err on querying",err)
-    }
-    console.log(result.rows)
-
-    client.end();
-  }) */
 app.get("/users",(req,res)=>{
   res.json(users)
 })
@@ -81,7 +55,7 @@ app.post("/login",passport.authenticate('local',{
   failureRedirect:'/login',
   failureFlash:true
 }))
-app.post("/register",async(req,res)=>{
+app.post("/register",async(req,res,next)=>{
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
@@ -100,7 +74,7 @@ app.post("/register",async(req,res)=>{
 
 
 
-app.get("/getarchive",checkAuthenticated,(req, res) => {
+app.get("/getarchive",checkAuthenticated,(req, res,next) => {
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
@@ -111,7 +85,7 @@ app.get("/getarchive",checkAuthenticated,(req, res) => {
   });
 });
 
-app.post("/send", checkAuthenticated,(req, res) => {
+app.post("/send", checkAuthenticated,(req, res,next) => {
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
@@ -153,7 +127,7 @@ app.post("/send", checkAuthenticated,(req, res) => {
 
 
 
-app.post("/updateapprove", checkAuthenticated,(req, res) => {
+app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
   const { address } = req.body;
   console.log(`POST values:,
   Contract address:${address},`)
