@@ -35,7 +35,7 @@ app.use(cors({
 app.use(express.json());
 app.use(flash())
 app.use(session({
-  secret:'secretcode',
+  secret:process.env.SESSION_SECRET,
   resave:false,
   saveUninitialized:false
 }))
