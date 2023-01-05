@@ -155,7 +155,7 @@ async function getUserByName(name){
    
     return client.query(sql,value)
     .then(result=>{
-       result.rows[0]
+      return result.rows[0]
     })
     .catch(err=>console.log(err))
       
@@ -176,7 +176,7 @@ async function getUserById(id){
   const sql='SELECT * FROM users where "id"=$1';
   const value=[id]
   return client.query(sql,value).then(result=>{
-       result.rows[0]
+       return result.rows[0]
     })
     .catch(err=>console.log(err))
     
