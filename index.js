@@ -40,7 +40,7 @@ app.use(session({
   saveUninitialized:false
 }))
 
-app.use(cookieParser("secretcode"));
+
 app.use(passport.initialize())
 app.use(passport.session())
 
