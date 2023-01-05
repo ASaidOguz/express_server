@@ -50,9 +50,7 @@ app.post("/login",passport.authenticate('local',{
   successRedirect:'/getarchive',
   failureRedirect:'/login',
   failureFlash:true
-}),(res,req)=>{
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
-})
+}))
 app.post("/register",async(req,res,next)=>{
   res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   try {
