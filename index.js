@@ -77,7 +77,7 @@ app.post("/register",async(req,res,next)=>{
 
 
 app.get("/getarchive",checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+ 
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
