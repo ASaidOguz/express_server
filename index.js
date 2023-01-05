@@ -7,7 +7,7 @@ const flash=require('express-flash')
 const session=require('express-session')
 var pg=require('pg')
 const LocalStrategy=require('passport-local').Strategy
-const bcrypt=require('bcrypt')
+const bcrypt=require('bcryptjs')
 require('dotenv').config()
 
 const passport = require("passport");
