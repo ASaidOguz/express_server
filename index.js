@@ -50,19 +50,20 @@ app.use(passport.session())
 
 
 
-app.post("/login",(req,res,next)=>{
-  res.set('Access-Control-Allow-Origin', "http://localhost:3000");
-  passport.authenticate('local',{
-    successRedirect:'/getarchive',
-    failureRedirect:'/login',
-    failureFlash:true
-})
+app.post("/login",passport.authenticate('local',{
+  successRedirect:'/getarchive',
+  failureRedirect:'/login',
+  failureFlash:true
+}),(res,req,next)=>{
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.send({success:true})
+}
 
-})
+)
 
 
 app.post("/register",async(req,res,next)=>{
-  res.set('Access-Control-Allow-Origin', "http://localhost:3000");
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
@@ -82,7 +83,7 @@ app.post("/register",async(req,res,next)=>{
 
 
 app.get("/getarchive",checkAuthenticated,(req, res) => {
-  res.set('Access-Control-Allow-Origin', "http://localhost:3000");
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
@@ -94,7 +95,7 @@ app.get("/getarchive",checkAuthenticated,(req, res) => {
 });
 
 app.post("/send", checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', "http://localhost:3000");
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
@@ -137,7 +138,7 @@ app.post("/send", checkAuthenticated,(req, res,next) => {
 
 
 app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', "http://localhost:3000");
+  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:3000');
   const { address } = req.body;
   console.log(`POST values:,
   Contract address:${address},`)
