@@ -50,11 +50,15 @@ app.use(passport.session())
 
 
 
-app.post("/login",passport.authenticate('local',{
-  successRedirect:'/getarchive',
-  failureRedirect:'/login',
-  failureFlash:true
-}))
+app.post("/login",(req,res,next)=>{
+  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:3000');
+  passport.authenticate('local',{
+    successRedirect:'/getarchive',
+    failureRedirect:'/login',
+    failureFlash:true
+})
+
+})
 
 
 app.post("/register",async(req,res,next)=>{
