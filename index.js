@@ -46,28 +46,14 @@ app.use(passport.session())
 
 
 
-app.get("/users",(req,res)=>{
-  res.json(users)
-})
-/* app.post("/login",passport.authenticate('local',{
+
+app.post("/login",passport.authenticate('local',{
   successRedirect:'/getarchive',
   failureRedirect:'/login',
   failureFlash:true
-})) */
+}))
 
-app.post("/login",(req,res,next)=>{
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) res.send("No User Exists");
-    else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send("Successfully Authenticated");
-        console.log(req.user);
-      });
-    }
-  })(req, res, next);
-})
+
 app.post("/register",async(req,res,next)=>{
   res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   try {
