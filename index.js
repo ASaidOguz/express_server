@@ -32,7 +32,8 @@ app.use(cors({
   origin:["http://localhost:3000","https://vercel.com/dashboard"],//<== location of the react app we r connecting!!
   credentials:true, 
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
-    exposedHeaders: ["set-cookie"]
+    exposedHeaders: ["set-cookie"],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']
 }));
 app.use(express.json());
 app.use(flash())
