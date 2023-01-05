@@ -31,7 +31,7 @@ initializePassport(passport,
 
 //Adding cors origin and setting credentials true to receiving connection...  
 app.use(cors({ 
-  origin:["http://localhost:3000/","https:/vercel.com/dashboard"],//<== location of the react app we r connecting!!
+  origin:["http://localhost:3000","https:/vercel.com/dashboard"],//<== location of the react app we r connecting!!
   credentials:true
 }));
 app.use(express.json());
