@@ -11,10 +11,6 @@ const bcrypt=require('bcryptjs')
 require('dotenv').config()
 
 const passport = require("passport");
-
-
-
-
 var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
 //Initilazing the database 
@@ -38,7 +34,7 @@ app.use(cors({
 app.use(express.json());
 app.use(flash())
 app.use(session({
-  secret:process.env.SESSION_SECRET,
+  secret:'verySecret',
   resave:false,
   saveUninitialized:false
 }))
