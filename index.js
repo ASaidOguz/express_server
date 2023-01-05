@@ -22,7 +22,7 @@ client.connect(function(err){
     return console.log("could not connect postgres!",err)
   }
 })
-
+app.enable('trust proxy');
 //Initialize the passport for auth checks 
 initializePassport(passport,
  name=> getUserByName(name),
