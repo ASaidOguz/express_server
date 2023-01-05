@@ -6,9 +6,10 @@ const port = 3042;
 const flash=require('express-flash')
 const session=require('express-session')
 var pg=require('pg')
+const LocalStrategy=require('passport-local').Strategy
 const bcrypt=require('bcrypt')
 require('dotenv').config()
-const initializePassport=require('./passport-config');
+
 const passport = require("passport");
 
 
@@ -24,7 +25,7 @@ client.connect(function(err){
 })
 app.enable('trust proxy');
 //Initialize the passport for auth checks 
-initializePassport(passport,
+initialize(passport,
  name=> getUserByName(name),
   id=>getUserById(id)
   )
@@ -216,6 +217,30 @@ function checkAuthenticated(req,res,next){
 }
 
 
+
+function initialize(passport,getUserByName,getUserById){
+    const authenticateUser=async (name,password,done)=>{
+       const user= await getUserByName(name)
+       console.log(user)
+       if(user===null){
+        return done(null,false,{message:'No user with such name'})
+       }
+       try {
+         
+        if(await bcrypt.compare(password,user.hashedpassword)){
+           return done(null,user)
+        }else{
+           return done(null,false,{message:'password incorrect!'})
+        }
+       } catch(error)  {
+        return done(error)
+       }
+    }
+   passport.use(new LocalStrategy({usernameField:'name'},authenticateUser))
+   passport.serializeUser((user,done)=>done(null,user.id))
+   passport.deserializeUser((id,done)=>{
+   return done(null,getUserById(id))})
+}
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`);
