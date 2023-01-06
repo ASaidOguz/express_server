@@ -51,7 +51,7 @@ app.use(passport.session())
 
 
 app.post("/login",(req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app/");
   res.header("Access-Control-Allow-Methods", "GET, POST");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -65,7 +65,7 @@ app.post("/login",(req, res) => {
 
 
 app.post("/register",async(req,res,next)=>{
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set('Access-Control-Allow-Origin', 'https://escrow-app-five.vercel.app/');
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
@@ -85,7 +85,7 @@ app.post("/register",async(req,res,next)=>{
 
 
 app.get("/getarchive",checkAuthenticated,(req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app/");
   res.header("Access-Control-Allow-Methods", "GET, POST");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -100,7 +100,7 @@ app.get("/getarchive",checkAuthenticated,(req, res) => {
 });
 
 app.post("/send", checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set('Access-Control-Allow-Origin', 'https://escrow-app-five.vercel.app/');
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
@@ -143,7 +143,7 @@ app.post("/send", checkAuthenticated,(req, res,next) => {
 
 
 app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set('Access-Control-Allow-Origin', 'https://escrow-app-five.vercel.app/');
   const { address } = req.body;
   console.log(`POST values:,
   Contract address:${address},`)
