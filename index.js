@@ -30,7 +30,7 @@ initialize(passport,
 //Adding cors origin and setting credentials true to receiving connection...  
 app.use(cors({ 
   origin:["http://localhost:3000","https://vercel.com"],//<== location of the react app we r connecting!!
-  credentials:true, 
+    credentials:true, 
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
     exposedHeaders: ["set-cookie"],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']
@@ -50,7 +50,11 @@ app.use(passport.session())
 
 
 
-app.post("/login",cors(),passport.authenticate('local',{
+app.post("/login",cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}),passport.authenticate('local',{
   successRedirect:'/getarchive',
   failureRedirect:'/login',
   failureFlash:true
