@@ -6,15 +6,9 @@
         "use": "@now/node"
       }
     ],
-    "routes": [
+     "headers": [
       {
-       
-        "src": "/(.*)",
-        "dest": "index.js"
-      }
-    ], "headers": [
-      {
-        "source": "/api/(.*)",
+        "source": "index.js",
         "headers": [
           { "key": "Access-Control-Allow-Credentials", "value": "true" },
           { "key": "Access-Control-Allow-Origin", "value": "https://escrow-app-five.vercel.app/" },
