@@ -29,7 +29,7 @@ initialize(passport,
 
 //Adding cors origin and setting credentials true to receiving connection...  
 app.use(cors({ 
-    origin:["*","https://vercel.com"],//<== location of the react app we r connecting!!
+    origin:["*"],//<== location of the react app we r connecting!!
     credentials:true, 
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
     exposedHeaders: ["set-cookie"],
