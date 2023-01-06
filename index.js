@@ -52,7 +52,7 @@ app.post("/login",(req, res) => {
  
 
   passport.authenticate('local',{
-    successRedirect:'/',
+    successRedirect:'/archive',
     failureRedirect:'/login',
     failureFlash:true
   })(req, res);
