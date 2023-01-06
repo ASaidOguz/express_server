@@ -50,14 +50,11 @@ app.use(passport.session())
 
 
 
-app.post("/login",passport.authenticate('local',{
+app.post("/login",cors(),passport.authenticate('local',{
   successRedirect:'/getarchive',
   failureRedirect:'/login',
   failureFlash:true
-}),(res,req,next)=>{
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.send({success:true})
-}
+})
 
 )
 
@@ -138,7 +135,7 @@ app.post("/send", checkAuthenticated,(req, res,next) => {
 
 
 app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
-  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:3000');
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   const { address } = req.body;
   console.log(`POST values:,
   Contract address:${address},`)
