@@ -28,13 +28,10 @@ initialize(passport,
   )
 
 //Adding cors origin and setting credentials true to receiving connection...  
-app.use(cors({ 
-    origin:["*"],//<== location of the react app we r connecting!!
-    credentials:true, 
-    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
-    exposedHeaders: ["set-cookie"],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']
-}));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next()})
 app.use(express.json());
 app.use(flash())
 app.use(session({
