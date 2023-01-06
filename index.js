@@ -50,16 +50,17 @@ app.use(passport.session())
 
 
 
-app.post("/login",cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}),passport.authenticate('local',{
-  successRedirect:'/getarchive',
-  failureRedirect:'/login',
-  failureFlash:true
-})
+app.post("/login",(req, res) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Methods", "GET, POST");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+  passport.authenticate('local',{
+    successRedirect:'/getarchive',
+    failureRedirect:'/login',
+    failureFlash:true
+  })(req, res);
+}
 )
 
 
