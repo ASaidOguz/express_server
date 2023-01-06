@@ -8,7 +8,7 @@ const session=require('express-session')
 var pg=require('pg')
 const LocalStrategy=require('passport-local').Strategy
 const bcrypt=require('bcryptjs')
-const cookieParser = require("cookie-parser");
+
 require('dotenv').config()
 
 const passport = require("passport");
@@ -29,7 +29,7 @@ initialize(passport,
 
 //Adding cors origin and setting credentials true to receiving connection...  
 app.use(cors({ 
-  origin:["http://localhost:3000","https://vercel.com"],//<== location of the react app we r connecting!!
+    origin:["http://localhost:3000","https://vercel.com"],//<== location of the react app we r connecting!!
     credentials:true, 
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
     exposedHeaders: ["set-cookie"],
@@ -85,7 +85,10 @@ app.post("/register",async(req,res,next)=>{
 
 
 app.get("/getarchive",checkAuthenticated,(req, res) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Methods", "GET, POST");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
