@@ -51,9 +51,7 @@ app.use(passport.session())
 
 
 app.post("/login",(req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+ 
 
   passport.authenticate('local',{
     successRedirect:'/',
@@ -65,9 +63,7 @@ app.post("/login",(req, res) => {
 
 
 app.post("/register",async(req,res,next)=>{
-  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
@@ -87,9 +83,7 @@ app.post("/register",async(req,res,next)=>{
 
 
 app.get("/getarchive",checkAuthenticated,(req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app/");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
 
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
@@ -102,9 +96,7 @@ app.get("/getarchive",checkAuthenticated,(req, res) => {
 });
 
 app.post("/send", checkAuthenticated,(req, res,next) => {
-  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+ 
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
@@ -147,9 +139,7 @@ app.post("/send", checkAuthenticated,(req, res,next) => {
 
 
 app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
-  res.header("Access-Control-Allow-Origin", "https://escrow-app-five.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
   const { address } = req.body;
   console.log(`POST values:,
   Contract address:${address},`)
