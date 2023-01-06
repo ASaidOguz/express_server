@@ -56,7 +56,7 @@ app.post("/login",(req, res) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   passport.authenticate('local',{
-    successRedirect:'/getarchive',
+    successRedirect:'/',
     failureRedirect:'/login',
     failureFlash:true
   })(req, res);
