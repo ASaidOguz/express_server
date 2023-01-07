@@ -4,12 +4,9 @@ const app = express();
 const cors = require("cors");
 const port = 3042;
 var pg=require('pg')
-const LocalStrategy=require('passport-local').Strategy
 const bcrypt=require('bcryptjs')
 
 require('dotenv').config()
-
-const passport = require("passport");
 var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
 //Initilazing the database 
@@ -57,7 +54,7 @@ app.post("/register",async(req,res)=>{
 
 
 
-app.get("/getarchive",(req, res) => {
+app.get('/getarchive',(req, res) => {
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
