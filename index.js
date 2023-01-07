@@ -5,7 +5,7 @@ const cors = require("cors");
 const port = 3042;
 var pg=require('pg')
 const bcrypt=require('bcryptjs')
-
+app.use(express.json())
 require('dotenv').config()
 var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
@@ -65,8 +65,8 @@ app.get('/getarchive',(req, res) => {
   });
 });
 
-app.post("/send",(req, res,next) => {
- 
+app.post("/send",(req, res) => {
+  console.log("Req body:",req.body.chain)
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
