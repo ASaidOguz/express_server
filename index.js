@@ -76,7 +76,7 @@ app.post("/send",(req, res,next) => {
   beneficiary:${beneficiary},
   value:${amount}
   isApproved:${isApproved}`)
-  const sql='INSERT INTO blockchain_table (chain,contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6)';
+  const sql='INSERT INTO blockchain_table (chain,contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6,$7)';
   const values = [chain,address,arbiter,beneficiary,amount,isApproved];
   client.query(sql, values, (error, result) => {
     if (error) {
