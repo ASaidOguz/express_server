@@ -3,8 +3,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
-const flash=require('express-flash')
-const session=require('express-session')
 var pg=require('pg')
 const LocalStrategy=require('passport-local').Strategy
 const bcrypt=require('bcryptjs')
@@ -20,26 +18,11 @@ client.connect(function(err){
     return console.log("could not connect postgres!",err)
   }
 })
-app.enable('trust proxy');
+
 //Initialize the passport for auth checks 
-initialize(passport,
- name=> getUserByName(name),
-  id=>getUserById(id)
-  )
 
 //Adding cors origin and setting credentials true to receiving connection...  
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next()})
-  app.use(cors())
-app.use(express.json());
-app.use(flash())
-app.use(session({
-  secret:process.env.SESSION_SECRET,
-  resave:false,
-  saveUninitialized:false
-}))
+app.use(cors())
 
 
 
