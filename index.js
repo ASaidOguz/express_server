@@ -58,8 +58,6 @@ app.post("/register",async(req,res)=>{
 
 
 app.get("/getarchive",(req, res) => {
-  
-
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
