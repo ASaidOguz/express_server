@@ -42,25 +42,19 @@ app.use(session({
 }))
 
 
-app.use(passport.initialize())
-app.use(passport.session())
 
 
 
 
-app.post("/login",(req, res) => {
+
+/* app.post("/login",(req, res) => {
  
 
-  passport.authenticate('local',{
-    successRedirect:'/archive',
-    failureRedirect:'/login',
-    failureFlash:true
-  })(req, res);
-}
-)
+  
+) */
 
 
-app.post("/register",async(req,res,next)=>{
+app.post("/register",async(req,res)=>{
   
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
@@ -80,7 +74,7 @@ app.post("/register",async(req,res,next)=>{
 
 
 
-app.get("/getarchive",checkAuthenticated,(req, res) => {
+app.get("/getarchive",(req, res) => {
   
 
  client.query('SELECT * FROM blockchain_table', (error, result) => {
@@ -93,7 +87,7 @@ app.get("/getarchive",checkAuthenticated,(req, res) => {
   });
 });
 
-app.post("/send", checkAuthenticated,(req, res,next) => {
+app.post("/send",(req, res,next) => {
  
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
@@ -136,7 +130,7 @@ app.post("/send", checkAuthenticated,(req, res,next) => {
 
 
 
-app.post("/updateapprove", checkAuthenticated,(req, res,next) => {
+app.post("/updateapprove",(req, res,next) => {
   
   const { address } = req.body;
   console.log(`POST values:,
@@ -202,29 +196,6 @@ function checkAuthenticated(req,res,next){
 
 
 
-function initialize(passport,getUserByName,getUserById){
-    const authenticateUser=async (name,password,done)=>{
-       const user= await getUserByName(name)
-       console.log(user)
-       if(user===null){
-        return done(null,false,{message:'No user with such name'})
-       }
-       try {
-         
-        if(await bcrypt.compare(password,user.hashedpassword)){
-           return done(null,user)
-        }else{
-           return done(null,false,{message:'password incorrect!'})
-        }
-       } catch(error)  {
-        return done(error)
-       }
-    }
-   passport.use(new LocalStrategy({usernameField:'name'},authenticateUser))
-   passport.serializeUser((user,done)=>done(null,user.id))
-   passport.deserializeUser((id,done)=>{
-   return done(null,getUserById(id))})
-}
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}!`);
