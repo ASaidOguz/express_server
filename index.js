@@ -55,7 +55,7 @@ app.post('/login',async(req,res)=>{
         res.status(403).send("No authorization!")
        }
       } catch (error) {
-        res.status(500).send("Error:",error)
+        res.status(500).send(error)
       }
 
 })
