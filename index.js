@@ -24,34 +24,44 @@ client.connect(function(err){
 app.use(cors())
 
 
-/* app.post("/login",(req, res) => {
- 
-
-  
-) */
-
-
 app.post("/register",async(req,res)=>{
   
   try {
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
     const user={ id:Date.now().toString(),name:req.body.name,hashedpassword:hashedpassword}
-    //users.push(user)
+    //writing user into Postgres DB
     WritingUsers(user)
-    const jwt=generateToken(user)
-    res.status(200).send({jwt:jwt});
-    //res.redirect("/login")
+    res.status(201).send("User registration complete!")
   } catch (error) {
     console.log(error)
-    res.redirect("/register")
+    res.status(500).send(error)
   }
   
 })
 
+app.post('/login',async(req,res)=>{
+      const{name,password}=req.body
+      const user=getUserByName(name)
+      //Check if a user with the login name exist!!
+      if(!user){
+        res.status(400).send("Can't find registered user!!")
+      }
+      try {
+       if(await bcrypt.compare(password,user.hashedpassword)){
+        const jwt=generateToken(user)
+        res.status(200).send({jwt:jwt})
+       }else{
+        res.status(403).send("No authorization!")
+       }
+      } catch (error) {
+        res.status(500).send("Error:",error)
+      }
+
+})
 
 
-
+//This is getarchive handler ---
 app.get('/getarchive',authanticateToken,(req, res) => {
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
@@ -63,7 +73,8 @@ app.get('/getarchive',authanticateToken,(req, res) => {
   });
 });
 
-app.post("/send",(req, res) => {
+//This is send handler ;handling for wrting contracts into db 
+app.post("/send",authanticateToken,(req, res) => {
   console.log("Req body:",req.body.chain)
   const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
@@ -87,7 +98,7 @@ app.post("/send",(req, res) => {
 });
 
 
-
+//Writing into DB
  async function WritingUsers(user){
   const{id,name,hashedpassword}=user
   const sql='INSERT INTO users (id,name,hashedpassword) VALUES ($1, $2,$3)';
@@ -105,8 +116,8 @@ app.post("/send",(req, res) => {
 
 
 
-
-app.post("/updateapprove",(req, res,next) => {
+//Update the approve field in contract object where resides in DB 
+app.post("/updateapprove",authanticateToken,(req, res,next) => {
   
   const { address } = req.body;
   console.log(`POST values:,
@@ -123,6 +134,7 @@ app.post("/updateapprove",(req, res,next) => {
   });
 });
 
+//Getting user by name field from DB
 async function getUserByName(name){
    const sql='SELECT * FROM users where "name"=$1';
    const value=[name]
@@ -146,6 +158,7 @@ async function getUserByName(name){
    }) */
 }
 
+//Getting user by Id field from DB
 async function getUserById(id){
   const sql='SELECT * FROM users where "id"=$1';
   const value=[id]
