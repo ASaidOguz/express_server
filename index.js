@@ -11,7 +11,8 @@ var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
 const jwt=require('jsonwebtoken')
 app.use(cors({
-  origin:"https://escrow-app-five.vercel.app"
+  origin:"https://escrow-app-five.vercel.app",
+  credentials:true
 }))
 //Initilazing the database 
 client.connect(function(err){
