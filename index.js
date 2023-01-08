@@ -10,6 +10,9 @@ require('dotenv').config()
 var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
 const jwt=require('jsonwebtoken')
+app.use(cors({
+  origin:"https://escrow-app-five.vercel.app/"
+}))
 //Initilazing the database 
 client.connect(function(err){
   if(err){
