@@ -9,6 +9,7 @@ app.use(express.json())
 require('dotenv').config()
 var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
+const jwt=require('jsonwebtoken')
 //Initilazing the database 
 client.connect(function(err){
   if(err){
@@ -16,15 +17,7 @@ client.connect(function(err){
   }
 })
 
-//Initialize the passport for auth checks 
-
-//Adding cors origin and setting credentials true to receiving connection...  
 app.use(cors())
-
-
-
-
-
 
 
 /* app.post("/login",(req, res) => {
@@ -42,7 +35,8 @@ app.post("/register",async(req,res)=>{
     const user={ id:Date.now().toString(),name:req.body.name,hashedpassword:hashedpassword}
     //users.push(user)
     WritingUsers(user)
-    res.send({ success: true });
+    const jwt=generateToken(user)
+    res.status(200).send({jwt:jwt});
     //res.redirect("/login")
   } catch (error) {
     console.log(error)
@@ -54,7 +48,7 @@ app.post("/register",async(req,res)=>{
 
 
 
-app.get('/getarchive',(req, res) => {
+app.get('/getarchive',authanticateToken,(req, res) => {
  client.query('SELECT * FROM blockchain_table', (error, result) => {
     if (error) {
       console.error('Error querying the database: ' + error.stack);
@@ -164,14 +158,25 @@ async function getUserById(id){
     return result.rows[0]
   }) */
 }
-function checkAuthenticated(req,res,next){
-  if(req.isAuthenticated()){
-    next()
-  }else{
-    res.redirect('/login')
-  }
+
+
+function authanticateToken(req,res,next){
+  const authHeader=req.headers['authorization']
+
+  const token=authHeader&&authHeader.split(' ')[1]
+
+  if(token==null) return res.sendStatus(401)
+
+  jwt.verify(token,process.env.ACCESS_SECRET_TOKEN,(err,user)=>{
+      if(err) return res.sendStatus(403)
+      req.user=user
+      next()
+  })
 }
 
+function generateToken(user){
+  return  acces_token=jwt.sign(user,process.env.ACCESS_SECRET_TOKEN)
+}
 
 
 
