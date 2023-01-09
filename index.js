@@ -11,7 +11,7 @@ var conString=process.env.CONSTRING
 var client= new pg.Client(conString)
 const jwt=require('jsonwebtoken')
 app.use(cors({
-  origin:"https://escrow-app-five.vercel.app",
+  origin:"http://localhost:3000",//"https://escrow-app-five.vercel.app",
   credentials:true
 }))
 //Initilazing the database 
@@ -42,7 +42,8 @@ app.post("/register",async(req,res)=>{
 
 app.post('/login',async(req,res)=>{
       const{name,password}=req.body
-      const user=getUserByName(name)
+      const user=await getUserByName(name)
+      console.log(user)
       //Check if a user with the login name exist!!
       if(!user){
         res.status(400).send("Can't find registered user!!")
@@ -55,6 +56,7 @@ app.post('/login',async(req,res)=>{
         res.status(403).send("No authorization!")
        }
       } catch (error) {
+        console.log(error)
         res.status(500).send(error)
       }
 
