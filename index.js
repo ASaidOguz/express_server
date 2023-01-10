@@ -44,6 +44,10 @@ app.post('/login',async(req,res)=>{
       const{name,password}=req.body
       const user=await getUserByName(name)
       console.log(user)
+      const currentuser={
+        id:user.id,
+        name:user.name
+      }
       //Check if a user with the login name exist!!
       if(!user){
         res.status(400).send("Can't find registered user!!")
@@ -51,9 +55,10 @@ app.post('/login',async(req,res)=>{
       try {
        if(await bcrypt.compare(password,user.hashedpassword)){
         const jwt=generateToken(user)
-        res.status(200).send({jwt:jwt})
+        res.status(200).send({jwt:jwt,
+                              user:currentuser})
        }else{
-        res.status(403).send("No authorization!")
+        res.status(401).send("No authorization!")
        }
       } catch (error) {
         console.log(error)
@@ -78,17 +83,18 @@ app.get('/getarchive',authanticateToken,(req, res) => {
 //This is send handler ;handling for wrting contracts into db 
 app.post("/send",authanticateToken,(req, res) => {
   console.log("Req body:",req.body.chain)
-  const { chain,address, arbiter, beneficiary,value,isApproved } = req.body;
+  const { user,chain,address, arbiter, beneficiary,value,isApproved } = req.body;
   let amount=value
   console.log(`POST values:,
+  User:${user},
   Chain:${chain},
   Contract address:${address},
   arbiter:${arbiter},
   beneficiary:${beneficiary},
   value:${amount}
   isApproved:${isApproved}`)
-  const sql='INSERT INTO blockchain_table (chain,contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6)';
-  const values = [chain,address,arbiter,beneficiary,amount,isApproved];
+  const sql='INSERT INTO blockchain_table (username,chain,contract_address,arbiter,beneficiary,amount,isApproved) VALUES ($1, $2,$3,$4,$5,$6,$7)';
+  const values = [user,chain,address,arbiter,beneficiary,amount,isApproved];
   client.query(sql, values, (error, result) => {
     if (error) {
       console.error('Error inserting into the database: ' + error.stack);
