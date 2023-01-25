@@ -2,7 +2,7 @@
 
 Web3 escrow contract maker project where you can create typical escrow smart contract and deploy it and while your depoist waits it can gain interest thanks to proxy logic staker contract exist inside the contract 
 
-[x] Escrow contract logic  
+- [x] Escrow contract logic  
 
     Contract owner 
     Arbiter
