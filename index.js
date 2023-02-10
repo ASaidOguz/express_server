@@ -49,14 +49,14 @@ app.post("/register",async(req,res)=>{
 app.post('/login',async(req,res)=>{
       const{name,password}=req.body
       const user=await getUserByName(name)
-      console.log(user)
+      //Check if a user with the login name exist!!
+      if(!user){
+        return res.status(400).send("Can't find registered user!!")
+      }
+      //if user exist keep on authentication of user...
       const currentuser={
         id:user.id,
         name:user.name
-      }
-      //Check if a user with the login name exist!!
-      if(!user){
-        res.status(400).send("Can't find registered user!!")
       }
       try {
        if(await bcrypt.compare(password,user.hashedpassword)){
