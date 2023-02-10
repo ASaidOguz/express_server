@@ -28,7 +28,8 @@ app.post("/register",async(req,res)=>{
   
   try {
     //check db If same name exist!!
-    if(!getUserByName(req.body.name)){
+    if(!await getUserByName(req.body.name)){
+      
     const hashedpassword=await bcrypt.hash(req.body.password,10)
     console.log("hashed password:",hashedpassword)
     const user={ id:Date.now().toString(),name:req.body.name,hashedpassword:hashedpassword}
@@ -37,7 +38,7 @@ app.post("/register",async(req,res)=>{
     res.status(201).send("User registration complete!")}else{
       res.status(403).send("User name already exist!");
     }
-    
+    console.log(req.body.name)
   } catch (error) {
     console.log(error)
     res.status(500).send(error)
