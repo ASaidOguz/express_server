@@ -1,0 +1,102 @@
+// index.js (or your main server file)
+
+import express from "express";
+import cors from "cors";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv"; // Import dotenv
+import { generateVK } from "./generate_vk_calldata.js"; // Note the .js extension for local modules
+import { getProvider } from "./utils/provider.js";
+import { connectAccount } from "./utils/account_connect.js";
+import { buildContract } from "./utils/build_contract.js";
+import { zkVerifyCall } from "./utils/zk_verify_call.js";
+dotenv.config(); // Call config after importing
+
+const app = express();
+const port = 3042;
+
+app.use(express.json());
+app.use(cors({
+  origin: "https://escrow-app-five.vercel.app",
+  credentials: true
+}));
+
+// verify zkp and mint---
+app.get('/verify-mint', async(req, res) => {
+  try {
+    console.log("Req-Body:",req.body);
+    
+    const calldata = await generateVK({x:1,y:2});
+    const contractAddress = process.env.CIRCUIT_VERIFIER_ADDRESS 
+    await zkVerifyCall(getProvider('testnet'), contractAddress, calldata);
+    res.send('<p>Healthy</p>');
+  } catch (error) {
+    console.error("Error generating VK:", error);
+    res.status(500).send("Health check failed: " + error.message);
+  }
+});
+
+app.get('/provider', async(req, res) => {
+  const provider = getProvider('testnet'); // or 'mainnet'
+  const chainid= await  provider.getChainId();
+  res.send(chainid);
+});
+
+app.get('/connect-account', async(req, res) => {
+  const provider =  getProvider('testnet'); // or 'mainnet'
+  const account= await connectAccount(provider);
+  res.send(account.address);
+});
+
+app.get('/connect-contract', async(req, res) => {
+  const provider = getProvider('testnet'); // or 'mainnet'
+  const contractAddress = '0x02d2a4804f83c34227314dba41d5c2f8a546a500d34e30bb5078fd36b5af2d77'; // Replace with your contract address
+  const contract = await buildContract(provider, contractAddress);
+  res.send(contract.address);
+});
+
+// tx initiation works perfectly
+app.get('/initiate-tx',async(req,res)=>{
+  const provider = getProvider('testnet'); // or 'mainnet'
+  const account = await connectAccount(provider);
+  const contractAddress = '0x02d2a4804f83c34227314dba41d5c2f8a546a500d34e30bb5078fd36b5af2d77'; // Replace with your contract address
+  const contract = await buildContract(provider, contractAddress);
+  // Ensure the account is connected to the contract
+  contract.connect(account);
+try{
+ const myCall = contract.populate('increase_balance', [10]);
+ const response = await contract.increase_balance(myCall.calldata);
+ console.log("Transaction initiated:", response);
+ await provider.waitForTransaction(response.transaction_hash);
+ const bal2 = await contract.get_balance();
+res.send({ balance: bal2.toString() });
+
+}catch (error) {
+  console.error("Error initiating transaction:", error);
+  res.status(500).send("Transaction initiation failed: " + error.message);  
+}
+})
+
+
+
+
+/* function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+function generateToken(user) {
+  return jwt.sign(user, process.env.ACCESS_SECRET_TOKEN);
+} */
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Listening on port ${port}!`);
+});

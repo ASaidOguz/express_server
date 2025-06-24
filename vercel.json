@@ -1,19 +1,14 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "index.js",
-        "use": "@now/node"
-      }
-      
-    ],
-    "routes": [
-      {
-        
-        "src": "/(.*)",
-        "dest": "index.js"
-      }
-    ]
-    
-    
+  "version": 2,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "node_modules/@aztec/bb.js/dest/node/barretenberg_wasm/**/*"
+    }
   }
+}
