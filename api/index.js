@@ -10,6 +10,10 @@ import { getProvider } from "./utils/provider.js";
 import { connectAccount } from "./utils/account_connect.js";
 import { buildContract } from "./utils/build_contract.js";
 import { zkVerifyCall } from "./utils/zk_verify_call.js";
+import { pinFile,handleUploadAndMetadata  } from "./utils/pinataIpfs.js"; // Import the pinFile function
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/" });
 dotenv.config(); // Call config after importing
 
 const app = express();
@@ -21,33 +25,33 @@ app.use(cors({
   credentials: true
 }));
 
-// verify zkp and mint---
-app.get('/verify-mint', async(req, res) => {
+// verify zkp and if verification succesful-> mint nft---
+app.post('/verify-mint', async(req, res) => {
   try {
     console.log("Req-Body:",req.body);
     
-    const calldata = await generateVK({x:1,y:2});
+    const calldata = await generateVK({x:10,y:2});
     const contractAddress = process.env.CIRCUIT_VERIFIER_ADDRESS 
     await zkVerifyCall(getProvider('testnet'), contractAddress, calldata);
     res.send('<p>Healthy</p>');
   } catch (error) {
     console.error("Error generating VK:", error);
-    res.status(500).send("Health check failed: " + error.message);
+    res.status(500).send("Verification||Mint failed: " + error.message);
   }
 });
-
+// testing api ----->
 app.get('/provider', async(req, res) => {
   const provider = getProvider('testnet'); // or 'mainnet'
   const chainid= await  provider.getChainId();
   res.send(chainid);
 });
-
+// testing api ----->
 app.get('/connect-account', async(req, res) => {
   const provider =  getProvider('testnet'); // or 'mainnet'
   const account= await connectAccount(provider);
   res.send(account.address);
 });
-
+// testing api ----->
 app.get('/connect-contract', async(req, res) => {
   const provider = getProvider('testnet'); // or 'mainnet'
   const contractAddress = '0x02d2a4804f83c34227314dba41d5c2f8a546a500d34e30bb5078fd36b5af2d77'; // Replace with your contract address
@@ -55,7 +59,7 @@ app.get('/connect-contract', async(req, res) => {
   res.send(contract.address);
 });
 
-// tx initiation works perfectly
+// testing api -----> tx initiation works perfectly
 app.get('/initiate-tx',async(req,res)=>{
   const provider = getProvider('testnet'); // or 'mainnet'
   const account = await connectAccount(provider);
@@ -77,8 +81,40 @@ res.send({ balance: bal2.toString() });
 }
 })
 
+app.get('/pin-file', async (req, res) => {
+  const jwt = process.env.PINATA_JWT; // Ensure you have set this in your .env file
+  const json ={
+  id: 3,
+  name: "Mary Smith",
+  email: "mary.smith@example.com",
+  age: 34,
+  isActive: false,
+  roles: ["user"],
+}
+
+  const cid = await pinFile(json, jwt);
+  console.log("CID:", cid);
+  res.status(200);
+});
 
 
+app.post('/image-upload', upload.single('image'), async (req, res) => {
+  try {
+    const jwt = process.env.PINATA_JWT;
+    const { name, description } = req.body;
+
+    const result = await handleUploadAndMetadata(req.file, jwt, name, description);
+
+    res.json({
+      metadata_cid: result.metadataCid,
+      metadata_uri: `ipfs://${result.metadataCid}`,
+      metadata_gateway: result.gatewayUrl,
+    });
+  } catch (error) {
+    console.error("Mint-NFT Upload Error:", error);
+    res.status(500).json({ error: "Failed to upload and generate metadata" });
+  }
+});
 
 /* function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

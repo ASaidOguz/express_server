@@ -1,11 +1,12 @@
 import fs from 'fs/promises';
+import path from 'path';
 import { UltraHonkBackend } from '@aztec/bb.js';
 import { Noir } from '@noir-lang/noir_js';
-import { flattenFieldsAsArray } from "./utils/proof.js";
+import { flattenFieldsAsArray, hexToUint8Array, flattenUint8Arrays } from "./api/utils/proof.js";
 // Import the functions and the init function
 import { getHonkCallData, init } from 'garaga';
 // Import your compiled program.json
-import data from '../target/circuits.json' with { type: 'json' };
+import data from './circuits/target/circuits.json' with { type: 'json' };
 
 // Define HonkFlavor constants since they're not exported
 const HonkFlavor = {
@@ -13,15 +14,20 @@ const HonkFlavor = {
   STARKNET: 1
 };
 
- export async function generateVK(input_secret) {
+async function generateVK() {
   // Initialize the garaga WebAssembly module first
   console.log("Initializing garaga WebAssembly module...");
+  await init();
   
+  const vkOutputPath = path.resolve('./target/vk');
+  const proofOutputPath = path.resolve('./target/proof');
+  const calldataOutputPath = path.resolve('./target/calldata.json')
+
   const noir = new Noir(data);
   const backend = new UltraHonkBackend(data.bytecode);
 
   console.log("Executing the Noir program to generate witness...");
-  const { witness } = await noir.execute(input_secret);
+  const { witness } = await noir.execute({ x: 10, y: 2 });
 
   console.log("Generating the proof (proof is required to generate VK)...");
   const proof = await backend.generateProof(witness, { starknet: true });
@@ -41,21 +47,29 @@ const HonkFlavor = {
     throw new Error('Could not extract binary data from VK or Proof objects.');
   }
 
-  let calldata = [];
+  console.log("Writing VK to file:", vkOutputPath);
+  await fs.writeFile(vkOutputPath, vkBytes); 
+  
+  console.log("Writing Proof to file:", proofOutputPath);
+  await fs.writeFile(proofOutputPath, proofBytes);
+
+  console.log("VK and proof successfully written as binary files.");
+
+ 
   try {
   
       await init();
-       calldata = getHonkCallData(
+      const callData = getHonkCallData(
         proof.proof,
         flattenFieldsAsArray(proof.publicInputs),
         vk ,
         1 // HonkFlavor.STARKNET
       );
-/*    console.log("Accepting Calldata------------------------------->")
+      console.log("Accepting Calldata------------------------------->")
       console.log(callData);
-      console.log("End of Calldata----------------------------------<") */
+      console.log("End of Calldata----------------------------------<")
       // write the calldata into file.
-      //await writeCalldataToFile(callData, calldataOutputPath);
+      await writeCalldataToFile(callData, calldataOutputPath);
     
   } catch (error) {
     console.log("Error parsing proof or generating calldata:", error?.message || error);
@@ -63,14 +77,13 @@ const HonkFlavor = {
   }
     
   await backend.destroy();
-  return calldata;
 }
 
-/* generateVK().catch(err => {
+generateVK().catch(err => {
   console.error('Error generating VK:', err);
   process.exit(1);
 });
- */
+
 // Write function
 async function writeCalldataToFile(calldata, filePath) {
   const calldataAsStrings = calldata.map(e => e.toString());
