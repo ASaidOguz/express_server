@@ -36,7 +36,7 @@ app.post('/verify-mint', async(req, res) => {
     console.log("Req-Body:",req.body);
     const {distance,userAddress}= req.body;
     // Option 1: Round to nearest whole number -> this needed for circuit to accept the value
-const roundedDistance = Math.round(distance);
+    const roundedDistance = Math.round(distance);
 
     const calldata = await generateVK({x:roundedDistance,y:1});
     const contractAddress = process.env.CIRCUIT_VERIFIER_ADDRESS 
