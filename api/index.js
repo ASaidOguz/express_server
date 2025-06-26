@@ -25,10 +25,8 @@ const app = express();
 const port = 3042;
 
 app.use(express.json());
-app.use(cors({
-  origin: "https://escrow-app-five.vercel.app",
-  credentials: true
-}));
+// ✅ Allow all origins (for testing/dev)
+app.use(cors());
 
 // verify zkp and if verification succesful-> mint nft---
 app.post('/verify-mint', async(req, res) => {
