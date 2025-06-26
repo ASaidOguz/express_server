@@ -11,6 +11,11 @@ import { connectAccount } from "./utils/account_connect.js";
 import { buildContract } from "./utils/build_contract.js";
 import { zkVerifyCall } from "./utils/zk_verify_call.js";
 import { pinFile,handleUploadAndMetadata  } from "./utils/pinataIpfs.js"; // Import the pinFile function
+import { mintNft } from "./utils/mintNft.js"; // Import the mintNft function
+import { craftMetadataJson } from "./utils/craftMetadataJson.js";
+import { byteArray } from 'starknet';
+// Temporary check - add this to your file
+
 import multer from "multer";
 
 const upload = multer({ dest: "uploads/" });
@@ -29,11 +34,25 @@ app.use(cors({
 app.post('/verify-mint', async(req, res) => {
   try {
     console.log("Req-Body:",req.body);
-    
-    const calldata = await generateVK({x:10,y:2});
+    const {distance,userAddress}= req.body;
+    // Option 1: Round to nearest whole number -> this needed for circuit to accept the value
+const roundedDistance = Math.round(distance);
+
+    const calldata = await generateVK({x:roundedDistance,y:1});
     const contractAddress = process.env.CIRCUIT_VERIFIER_ADDRESS 
     await zkVerifyCall(getProvider('testnet'), contractAddress, calldata);
-    res.send('<p>Healthy</p>');
+  const json =  craftMetadataJson(distance,userAddress);
+  const metadataCid = await pinFile(json, process.env.PINATA_JWT);
+  console.log("Metadata CID:", metadataCid);
+  const cidByteArray = byteArray.byteArrayFromString(metadataCid)
+
+  const provider = getProvider('testnet'); // or 'mainnet'
+  const account = await connectAccount(provider);
+  const nftContractAddress = process.env.NFT_CONTRACT_ADDRESS; // Replace with your contract address
+  const nftcontract = await buildContract(provider, nftContractAddress);
+  const resp = await mintNft(nftcontract, account,cidByteArray, userAddress,provider );
+  console.log("Minted NFT Response:", resp);
+    res.send(`<p>https://sepolia.starkscan.co/tx/${resp.transaction_hash}</p>`);
   } catch (error) {
     console.error("Error generating VK:", error);
     res.status(500).send("Verification||Mint failed: " + error.message);
@@ -116,6 +135,13 @@ app.post('/image-upload', upload.single('image'), async (req, res) => {
   }
 });
 
+function splitLongString(str, chunkSize = 31) {
+    const chunks = [];
+    for (let i = 0; i < str.length; i += chunkSize) {
+        chunks.push(str.slice(i, i + chunkSize));
+    }
+    return chunks;
+}
 /* function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];

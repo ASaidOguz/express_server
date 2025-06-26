@@ -19,16 +19,6 @@ const upload = await pinata.upload.public.json(json);
   }
 }
 
-export async function pinImage( image,jwt) {
-    const pinata = connectPinata(jwt);
-    try {
-const upload = await pinata.upload.public.json(json);
-    return upload.cid;
-  } catch (error) {
-    console.error("Error pinning file:", error);
-    throw new Error("Failed to pin file to IPFS");
-  }
-}
 
 export async function handleUploadAndMetadata(file, jwt, name = "zk-touchgrass", description = "Uploaded via backend") {
   const pinata = new PinataSDK({ pinataJwt: jwt });

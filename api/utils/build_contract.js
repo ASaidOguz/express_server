@@ -5,7 +5,7 @@ export const buildContract = async (provider, contractAddress) => {
   try {
     // read the ABI of the Test contract
     const { abi } = await provider.getClassAt(contractAddress);
-    console.log("Contract ABI:", abi);
+    //console.log("Contract ABI:", abi);
     // Create a new contract instance
     const contract = new Contract(abi, contractAddress, provider);
     
